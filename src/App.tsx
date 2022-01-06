@@ -1,8 +1,12 @@
 import React from 'react';
+import { ethers } from 'ethers';
 import logo from './logo.svg';
 import './App.css';
+import createParcel from './utils';
 
 function App() {
+  // Visitor
+
   return (
     <div className="App">
       <header className="App-header">
@@ -10,14 +14,12 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <button onClick={async () => { 
+          const parcelAddr = await createParcel('test'); 
+          console.log("Parcel address:", parcelAddr);
+        }}>
+          Create Parcel
+        </button>
       </header>
     </div>
   );
