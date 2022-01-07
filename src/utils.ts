@@ -1,44 +1,44 @@
 import { ethers } from 'ethers';
-import ParcelFactory from './abis/ParcelFactory.json';
 
 // Metamask injects their global api into the page via window.ethereum
-declare var window: any;
+declare const window: any;
 
-const address = '0xEA69E5bDBe332311EF30F545F5f00a68Fcf608dE';
 const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
 
 async function requestSigner() {
-    try {
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
-        console.log("Account:", await signer.getAddress());
-        return signer;
-    } catch (e) {
-        console.error(e);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    console.log("Account:", await signer.getAddress());
+    return signer;
+}
+
+// const addToken = (params: any) =>
+//     window.ethereum.request({ method: 'wallet_watchAsset', params })
+//         .then(() => console.log('Success, Token added!'))
+//         .catch((error: Error) => console.error(`Error: ${error.message}`));
+
+function addTokenToWallet(
+    address: string,
+    symbol: string,
+    decimals = 18,
+    image?: string
+) {
+    if (typeof image === 'undefined') {
+        image = 'https://s2.coinmarketcap.com/static/img/coins/64x64/3701.png'
     }
+    const params = {
+        type: 'ERC20',
+        options: {
+            address,
+            symbol,
+            decimals,
+            image
+        }
+    }
+
+    window.ethereum.request({ method: 'wallet_watchAsset', params })
+        .then(() => console.log('Success, Token added!'))
+        .catch((error: Error) => console.log(`Error: ${error.message}`));
 }
 
-async function createParcel(secret: string) {
-    const signer = await requestSigner();
-
-    // Connect to deployed contract.
-    const factory = new ethers.Contract(address, ParcelFactory.abi, signer);
-    
-    // Compute hash and send transaction to create parcel.
-    const hashedSecret = ethers.utils.keccak256(Buffer.from(secret));
-    const tx = await factory.createParcel(hashedSecret);
-
-    // Wait for tx to be mined and extract parcel address from the emitted
-    // event.
-    const { events } = await tx.wait();
-    const createEvent = events.find((e: any) => e.event == "ParcelCreated");
-    const parcelAddr = createEvent.args.parcel;
-
-    return parcelAddr;
-}
-
-async function addEth(value: number) {
-
-}
-
-export default createParcel;
+export { requestSigner, addTokenToWallet };
