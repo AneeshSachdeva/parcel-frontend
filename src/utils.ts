@@ -5,17 +5,14 @@ declare const window: any;
 
 const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
 
+//async function getProvider()
+
 async function requestSigner() {
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
     console.log("Account:", await signer.getAddress());
     return signer;
 }
-
-// const addToken = (params: any) =>
-//     window.ethereum.request({ method: 'wallet_watchAsset', params })
-//         .then(() => console.log('Success, Token added!'))
-//         .catch((error: Error) => console.error(`Error: ${error.message}`));
 
 function addTokenToWallet(
     address: string,
@@ -41,4 +38,4 @@ function addTokenToWallet(
         .catch((error: Error) => console.log(`Error: ${error.message}`));
 }
 
-export { requestSigner, addTokenToWallet };
+export { provider, requestSigner, addTokenToWallet };
